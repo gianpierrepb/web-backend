@@ -1,4 +1,5 @@
-﻿using Moments.Models;
+﻿using Microsoft.AspNet.Identity;
+using Moments.Models;
 using Moments.Models.DataModels;
 using System;
 using System.Collections.Generic;
@@ -85,6 +86,8 @@ namespace Moments.Controllers
                     Moment moment = new Moment();
                     moment.altitud = altitud;
                     moment.latitud = latitud;
+                    moment.UserId = context.Users.ToList().First().Id;
+                    //moment.UserId = User.Identity.GetUserId();
                     moment.description = description;
                     moment.duration = duration;
                     context.Moment.Add(moment);
@@ -109,6 +112,8 @@ namespace Moments.Controllers
                     Moment moment = context.Moment.Find(id);
                     moment.altitud = altitud;
                     moment.latitud = latitud;
+                    moment.UserId = context.Users.ToList().First().Id;
+                    //moment.UserId = User.Identity.GetUserId();
                     moment.description = description;
                     moment.duration = duration;
                     context.SaveChanges();
@@ -131,7 +136,8 @@ namespace Moments.Controllers
                 using (var context = new ApplicationDbContext())
                 {
                     Moment moment = context.Moment.Find(id);
-                    context.Moment.Remove(moment);
+                    moment.deleted = true;
+                    context.SaveChanges();
                     return Ok();
                 }
             }

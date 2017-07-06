@@ -77,7 +77,8 @@ namespace Comments.Controllers
                 using (var context = new ApplicationDbContext())
                 {
                     Comment Comment = new Comment();
-                    Comment.UserId = User.Identity.GetUserId();
+                    //Comment.UserId = User.Identity.GetUserId();
+                    Comment.UserId = context.Users.ToList().First().Id;
                     Comment.MomentId = MomentId;
                     Comment.description = description;
                     context.Comment.Add(Comment);
@@ -99,7 +100,8 @@ namespace Comments.Controllers
                 using (var context = new ApplicationDbContext())
                 {
                     Comment Comment = context.Comment.Find(id);
-                    Comment.UserId = User.Identity.GetUserId();
+                    //Comment.UserId = User.Identity.GetUserId();
+                    Comment.UserId = context.Users.ToList().First().Id;
                     Comment.MomentId = MomentId;
                     Comment.description = description;
                     context.SaveChanges();
@@ -121,6 +123,7 @@ namespace Comments.Controllers
                 {
                     Comment Comment = context.Comment.Find(id);
                     context.Comment.Remove(Comment);
+                    context.SaveChanges();            
                     return Ok();
                 }
             }

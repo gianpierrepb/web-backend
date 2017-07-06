@@ -14,57 +14,127 @@ namespace Moments.Controllers
     public class PlanController : ApiController
     {
         [Route("Plans")]
-        public IEnumerable<Plan> Get()
+        public IHttpActionResult Get()
         {
-            using (var context = new ApplicationDbContext())
+            try
             {
-                return context.Plan.ToList();
+                using (var context = new ApplicationDbContext())
+                {
+                    List<PlanWebApi> plans = (from plan in context.Plan
+                                              select new PlanWebApi
+                                              {
+                                                  descripcion = plan.description,
+                                                  id = plan.id,
+                                                  price = plan.price
+                                              }).ToList();
+
+                    return Ok(plans);
+                }
             }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+            
         }
 
 
         [Route("Plan")]
-        public Plan Get(int id)
+        public IHttpActionResult Get(int id)
         {
-            using (var context = new ApplicationDbContext())
+            try
             {
-                return context.Plan.Find(id);
+                using(var context = new ApplicationDbContext())
+                {
+                    Plan plan = context.Plan.Find(id);
+                    return Ok(new PlanWebApi
+                    {
+                        descripcion = plan.description,
+                        id = plan.id,
+                        price = plan.price
+                    });
+                }
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
             }
         }
 
         [Route("Plan")]
-        public IHttpActionResult Post(string description)
+        public IHttpActionResult Post(string description, decimal price)
         {
-            using (var context = new ApplicationDbContext())
+            try
             {
-                Plan Plan = new Plan();
-                Plan.description = description;
-                context.SaveChanges();
-                return Ok();
+                using (var context = new ApplicationDbContext())
+                {
+                    Plan Plan = new Plan();
+                    Plan.description = description;
+                    Plan.price = price;
+                    context.Plan.Add(Plan);
+                    context.SaveChanges();
+                    return Ok();
+                }
+
             }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+            
         }
 
         [Route("Plan")]
-        public IHttpActionResult Put(int id, string description)
+        public IHttpActionResult Put(int id, string description, decimal price)
         {
-            using (var context = new ApplicationDbContext())
+            try
             {
-                Plan Plan = context.Plan.Find(id);
-                Plan.description = description;
-                context.SaveChanges();
-                return Ok();
+                using (var context = new ApplicationDbContext())
+                {
+                    Plan Plan = context.Plan.Find(id);
+                    Plan.description = description;
+                    Plan.price = price;
+                    context.SaveChanges();
+                    return Ok();
+                }
             }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+            
         }
 
         [Route("Plan")]
         public IHttpActionResult Delete(int id)
         {
-            using (var context = new ApplicationDbContext())
+            try
             {
-                Plan Plan = context.Plan.Find(id);
-                context.Plan.Remove(Plan);
-                return Ok();
+                using (var context = new ApplicationDbContext())
+                {
+                    Plan Plan = context.Plan.Find(id);
+                    context.Plan.Remove(Plan);
+                    context.SaveChanges();
+                    return Ok();
+                }
             }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+            
         }
+
+    }
+
+    public class PlanWebApi
+    {
+        public int id { get; set; }
+        public string descripcion { get; set; }
+        public decimal price { get; set; }
     }
 }

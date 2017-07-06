@@ -60,9 +60,14 @@ namespace Moments.Controllers
         {
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
+            ApplicationDbContext context = new ApplicationDbContext();
+            ApplicationUser user = context.Users.Find(User.Identity.GetUserId());
+
             return new UserInfoViewModel
             {
                 Email = User.Identity.GetUserName(),
+                NombreCompleto = user.NombreCompleto,
+                UserName = user.UserName,
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
             };
